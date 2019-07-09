@@ -1,6 +1,6 @@
 #include "union_find.h"
 
-UnionFind::UnionFind(int n): n{n}  {
+UnionFind::UnionFind(int n): n{n}, count{n} {
     id = vector<int>(n);
     sz = vector<int>(n);
     for(int i = 0; i < n; i++) {
@@ -8,6 +8,10 @@ UnionFind::UnionFind(int n): n{n}  {
         sz[i] = 1;
     }
 
+}
+
+int UnionFind::Count() {
+    return count;
 }
 
 int UnionFind::root(int p) {
@@ -26,6 +30,7 @@ void UnionFind::Union(int p, int q) {
     int rp = root(p);
     int rq = root(q);
     if(rp == rq) { return; }
+    count--;
     if (sz[rp] < sz[rq]) {
         id[rp] = rq;
         sz[rq] += sz[rp]; 
