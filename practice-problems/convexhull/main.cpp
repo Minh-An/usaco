@@ -22,9 +22,10 @@ void ConvexHull(vector< pair<int,int > >& points) {
     vector<pair<int,int >> original(points);
 
     std::sort(points.begin(), points.end(), [](const pair<int,int>  &left, const pair<int,int>  &right) {
+        if (left.second == right.second)
+            return left.first < right.first;
         return left.second < right.second;
     });
-
     pair<int,int> lowest = points[0];
     std::sort(points.begin(), points.end(), [lowest](const pair<int,int> &left, const pair<int,int> &right) {
         return  atan2 ((left.second - lowest.second),(left.first -  lowest.first)) <
@@ -37,7 +38,6 @@ void ConvexHull(vector< pair<int,int > >& points) {
     for (k = 1; k < points.size(); k++)
         if (points[0] != points[k]) break;
     if (k == points.size()) return;
-    convexhull.push_back(points[k]);
 
     for (j = k+1; j < points.size(); j++)
         if (Orientation(points[0], points[k], points[j]) != 0) break;
