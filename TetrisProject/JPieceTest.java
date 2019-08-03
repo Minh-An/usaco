@@ -17,13 +17,16 @@ import javax.swing.event.*;
 */
 class JPieceTest extends JComponent {
 	protected Piece root;	
+	int width;
+	int height;
 	
 
 	public JPieceTest(Piece piece, int width, int height) {
 		super();
 		
 		setPreferredSize(new Dimension(width, height));
-
+		this.width = width;
+		this.height = height;
 		root = piece;
 	}
 
@@ -33,12 +36,42 @@ class JPieceTest extends JComponent {
 	*/
 	public final int MAX_ROTATIONS = 4;
 	public void paintComponent(Graphics g) {
+		int i = 0;
+		int sectionWidth = width/MAX_ROTATIONS;
+		drawPiece(g, root, new Rectangle( i++*sectionWidth, 0, sectionWidth, height));
+		for(Piece x = root.nextRotation(); x != root; x = x.nextRotation())
+		{
+			drawPiece(g, x, new Rectangle( i++*sectionWidth, 0, sectionWidth, height));
+		}
 	}
 	
 	/**
 	 Draw the piece inside the given rectangle.
 	*/
 	private void drawPiece(Graphics g, Piece piece, Rectangle r) {
+		int w = (int) Math.min(r.getWidth()/4, r.getHeight()/4);
+		g.setColor(Color.BLACK);
+        for (Point p : piece.getBody()) {
+            g.drawRect(
+                r.x + p.x * w,
+                (3 - p.y) * w,
+                w,
+                w
+            );
+        }
+        g.setColor(Color.YELLOW);
+        int[] skirt = piece.getSkirt();
+        for (int x = 0; x < skirt.length; x++) {
+            int y = skirt[x];
+            g.fillRect(
+                r.x + x * w,
+                (3 - y) * w,
+                w,
+                w
+            );
+        }
+        g.setColor(Color.RED);
+        g.drawString("w:" + piece.getWidth() + " h:" + piece.getHeight(), r.x, (int)r.getHeight());
 	}	
 
 

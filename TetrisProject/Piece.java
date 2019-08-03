@@ -38,11 +38,13 @@ public final class Piece {
      wants a piece object, they must use Piece.getPieces().
     */
     private Piece(Point[] points) {
+        this.body = new Point[points.length];
         System.arraycopy(points, 0, body, 0, points.length);
-        int maxX, maxY = Integer.MIN_VALUE;
+        int maxX = Integer.MIN_VALUE;   
+        int maxY = Integer.MIN_VALUE;        
         for (Point p: points) {
-            if (p.getX() > maxX) maxX = p.getX();
-            if (p.getY() > maxY) maxY = p.getY();
+            if (p.getX() > maxX) maxX = (int) p.getX();
+            if (p.getY() > maxY) maxY = (int) p.getY();
         }
         width = maxX +1;
         height = maxY+1;
@@ -50,7 +52,9 @@ public final class Piece {
         skirt = new int[width];
         Arrays.fill(skirt, Integer.MAX_VALUE);
         for (Point p: points) {
-            if(p.getY() < skirt[p.getX()]) skirt[p.getX()] = p.getY(); 
+            int x = (int) p.getX();
+            int y = (int) p.getY();
+            if(y < skirt[x]) skirt[x] = y; 
         }
 
     }
@@ -112,17 +116,18 @@ public final class Piece {
     */
     public boolean equals(Piece other) {
         if(this == other) return true;
-        Piece original = other.clone();
+        Point[] original = other.getBody();
         while(true)
         {
             if(pointsEqual(this.body, other.body)) return true;
             other = other.nextRotation();
-            if(pointsEqual(other.body, original.body)) break;
+            System.out.println(other);
+            if(pointsEqual(other.body, original)) break;
         }
         return false;
     }
 
-    private boolean pointsEqual(Point[] p1, Point[] p2)
+    private static boolean pointsEqual(Point[] p1, Point[] p2)
     {
         for(int i = 0; i < p1.length; i++)
         {
@@ -182,35 +187,65 @@ public final class Piece {
     }
 
     private static Piece pieceRow(Piece p){
-        Piece original = p.clone();
-        Piece q = rotate(p);
-        if(q.equals(p)) {
-            p.next = p;
-            return p;
-        } 
-        p.next = q;
-        Piece r = rotate(q);
-        if(r.equals(p)) {
-            q.next = p;
-            return p;
-        }
-        q.next = r;
-        Piece s = rotate(r);
-        if(s.equals(p)) {
-            r.next = p;
-            return p;
-        }
-        s.next = p;
-        return p;
-    }
+        if (pointsEqual(p.getBody(), parsePoints("0 0 0 1	0 2	0 3"))) {
+			Piece pnext =  new Piece(parsePoints("0 0 1 0 2 0 3 0"));
+			p.next = pnext;
+			pnext.next = p;
 
+		} else if (pointsEqual(p.getBody(), parsePoints("0 0 0 1	0 2	1 0"))) {
+			Piece pnext1 =  new Piece(parsePoints("0 0 1 0 2 0 2 1"));
+			p.next = pnext1;
+			Piece pnext2 =  new Piece(parsePoints("0 2 1 0 1 1 1 2"));
+			pnext1.next = pnext2;
+			Piece pnext3 =  new Piece(parsePoints("0 0 0 1 1 1 2 1"));
+			pnext2.next = pnext3;
+			pnext3.next = p;
+
+		} else if (pointsEqual(p.getBody(), parsePoints("0 0 1 0	1 1	1 2"))) {
+			Piece pnext1 =  new Piece(parsePoints("0 1 1 1 2 0 2 1"));
+			p.next = pnext1;
+			Piece pnext2 =  new Piece(parsePoints("0 0 0 1 0 2 1 2"));
+			pnext1.next = pnext2;
+			Piece pnext3 =  new Piece(parsePoints("0 0 0 1 1 0 2 0"));
+			pnext2.next = pnext3;
+			pnext3.next = p;
+
+		} else if (pointsEqual(p.getBody(), parsePoints("0 0 1 0	1 1	2 1"))) {
+			Piece pnext =  new Piece(parsePoints("0 1 0 2 1 0 1 1"));
+			p.next = pnext;
+			pnext.next = p;
+
+		} else if (pointsEqual(p.getBody(), parsePoints("0 1 1 1	1 0	2 0"))) {
+			Piece pnext =  new Piece(parsePoints("0 0 0 1 1 1 1 2"));
+			p.next = pnext;
+			pnext.next = p;
+
+		} else if (pointsEqual(p.getBody(), parsePoints("0 0 0 1	1 0	1 1"))) {
+			p.next = p;
+		} else if (pointsEqual(p.getBody(), parsePoints("0 0 1 0	1 1	2 0"))) {
+			Piece pnext1 =  new Piece(parsePoints("0 1 1 0 1 1 1 2"));
+			p.next = pnext1;
+			Piece pnext2 =  new Piece(parsePoints("0 1 1 0 1 1 2 1 "));
+			pnext1.next = pnext2;
+			Piece pnext3 =  new Piece(parsePoints("0 0 0 1 0 2 1 1"));
+			pnext2.next = pnext3;
+			pnext3.next = p;
+
+		} else {
+			throw new RuntimeException("Not a tetris piece.");
+		}
+
+		return p;
+    }
+/** 
     private static Piece rotate(Piece p) {
         Point[] rotatedBody = new Point[p.body.length];
-        int minX, minY = Integer.MAX_VALUE;
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
         for(int i = 0; i < rotatedBody.length; i++)
         {
-            int newX = -p.body[i].getY();
-            int newY = p.body[i].getX();
+            int newX = (int) -p.body[i].getY();
+            int newY = (int) p.body[i].getX();
             rotatedBody[i] = new Point(newX, newY);
             if(newX < minX) minX = newX;
             if(newY < minY) minY = newY;
@@ -221,7 +256,7 @@ public final class Piece {
         }
         return new Piece(rotatedBody);
     }
-
+*/
 
     /**
      Given a string of x,y pairs ("0 0	0 1	0 2	1 0"), parses
