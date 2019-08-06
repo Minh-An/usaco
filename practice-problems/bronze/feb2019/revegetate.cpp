@@ -18,7 +18,7 @@ int main(int argc, char const *argv[])
     unordered_map<int, unordered_set<int>> pastures;
     
     int n, m;
-    ifs >> n, m;
+    ifs >> n >> m;
 
     for (int i = 0; i < m; i++)
     {
@@ -27,6 +27,16 @@ int main(int argc, char const *argv[])
         pastures[a].emplace(b);
         pastures[b].emplace(a);
     }
+    /*
+    for(pair<int, unordered_set<int>> pasture: pastures)
+    {
+        cout << pasture.first << ": ";
+        for(int other: pasture.second)
+        {
+            cout << other << " ";
+        }
+        cout <<endl;
+    }*/
 
     vector<int> answer(n);
 
@@ -40,10 +50,11 @@ int main(int argc, char const *argv[])
                 taken_seeds.emplace(answer[k]);
             }
         }
-        for(int j = 1; i <= 4; i++)
+        for(int j = 1; j <= 4; j++)
         {   
             if(taken_seeds.find(j) == taken_seeds.end())
             {
+                answer[i] = j;
                 ofs << j;
                 break;
             }
