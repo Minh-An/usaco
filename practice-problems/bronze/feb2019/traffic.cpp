@@ -46,6 +46,7 @@ int main(int argc, char const *argv[])
     }
     ofs << current_range.first << " " << current_range.second << endl;
 
+    
 
     for(pair<int,int> p: ons_offs)
     {
