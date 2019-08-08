@@ -9,8 +9,8 @@ using namespace std;
 
 int main(int argc, char const *argv[])
 {
-    //ifstream ifs(argv[1], ifstream::in);
-    ifstream ifs("evolution.in", ifstream::in);
+    ifstream ifs(argv[1], ifstream::in);
+    //ifstream ifs("evolution.in", ifstream::in);
     ofstream ofs("evolution.out", ofstream::out);
     int subpopulations;
     ifs >> subpopulations;
